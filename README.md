@@ -41,3 +41,10 @@ Don't test string for errors
     end)
   end
 ```
+
+`video_controller_test.exs`
+Test with category
+```
+      %Category{id: category_id} = category_fixture("cat")
+      attrs = Map.put(@create_attrs, :category_id, category_id)
+```

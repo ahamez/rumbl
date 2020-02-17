@@ -32,4 +32,8 @@ defmodule Rumbl.TestHelpers do
 
     video
   end
+
+  def category_fixture(name \\ "category") do
+    Multimedia.create_category!(name)
+  end
 end
