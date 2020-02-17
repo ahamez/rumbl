@@ -4,6 +4,8 @@ Project from the "Programming with Phœnix" book.
 
 # Differences
 
+Uses argon2_elixir rather than pbkdf2_elixir
+
 `rumbl/lib/rumbl_web/views/user_view.ex`
 Used a `transmogrify` function rather than `first_name`
 ```
