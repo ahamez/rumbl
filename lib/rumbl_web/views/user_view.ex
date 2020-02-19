@@ -6,4 +6,8 @@ defmodule RumblWeb.UserView do
   def transmogrify(%Accounts.User{name: name}) do
     name <> Enum.random(["👍", "👔", "⚠️", "🔑", "🦖", "🐱", "🦉"])
   end
+
+  def render("user.json", %{user: user}) do
+    %{id: user.id, username: user.username}
+  end
 end
