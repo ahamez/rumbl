@@ -36,6 +36,7 @@ defmodule Rumbl.MultimediaTest do
       assert [%Video{id: ^id1}] = Multimedia.list_videos()
 
       %Video{id: id2} = video_fixture(owner)
+      # TODO: does Repo.all() sort by id?
       assert [%Video{id: ^id1}, %Video{id: ^id2}] = Multimedia.list_videos()
     end
 

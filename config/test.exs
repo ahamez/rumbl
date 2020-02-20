@@ -21,3 +21,7 @@ config :logger, level: :warn
 config :argon2_elixir,
   t_cost: 1,
   m_cost: 8
+
+config :info_sys, :wolfram,
+  http_client: InfoSys.Test.HttpWolframClient,
+  app_id: "1234"
