@@ -16,7 +16,11 @@ defmodule InfoSys.Wolfram do
   def compute(query, _opts) do
     query
     |> fetch_xml()
-    |> xpath(~x"/queryresult/pod[contains(@title, 'Result') or contains(@title, 'Definitions')]
+    |> xpath(~x"/queryresult/pod[
+        contains(@title, 'Result') or
+        contains(@title, 'Definition') or
+        contains(@title, 'Wikipedia summary')
+      ]
       /subpod/plaintext/text()")
     |> build_results()
   end
@@ -30,7 +34,7 @@ defmodule InfoSys.Wolfram do
   end
 
   defp fetch_xml(query) do
-    Logger.debug("#{url(query)}")
+    Logger.debug("Wolfram query: #{url(query)}")
     {:ok, {_, _, body}} = :httpc.request(String.to_charlist(url(query)))
 
     body

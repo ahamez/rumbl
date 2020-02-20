@@ -38,13 +38,8 @@ defmodule RumblWeb.VideoChannel do
 
     case Multimedia.annotate_video(user, socket.assigns.video_id, params) do
       {:ok, annotation} ->
-        broadcast!(socket, "new_annotation", %{
-          id: annotation.id,
-          user: RumblWeb.UserView.render("user.json", %{user: user}),
-          body: annotation.body,
-          at: annotation.at
-        })
-
+        broadcast_annotation(socket, user, annotation)
+        Task.start(fn -> compute_additional_info(socket, annotation) end)
         {:reply, :ok, socket}
 
       {:error, changeset} ->
@@ -63,5 +58,31 @@ defmodule RumblWeb.VideoChannel do
       )
 
     {:noreply, socket}
+  end
+
+  defp broadcast_annotation(socket, user, annotation) do
+    broadcast!(socket, "new_annotation", %{
+      id: annotation.id,
+      user: RumblWeb.UserView.render("user.json", %{user: user}),
+      body: annotation.body,
+      at: annotation.at
+    })
+  end
+
+  defp compute_additional_info(socket, annotation) do
+    for result <- InfoSys.compute(annotation.body, limit: 1, timeout: 5_000) do
+      backend_user = Accounts.get_user_by(username: result.backend.name())
+      attrs = %{body: result.text, at: annotation.at}
+
+      case Multimedia.annotate_video(backend_user, annotation.video_id, attrs) do
+        {:ok, info_ann} ->
+          Logger.debug("Response from #{inspect(backend_user)}: #{inspect(info_ann)}")
+          broadcast_annotation(socket, backend_user, info_ann)
+
+        {:error, _changeset} ->
+          Logger.warn("No response from #{inspect(backend_user)}")
+          :ignore
+      end
+    end
   end
 end
